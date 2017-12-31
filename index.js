@@ -7,6 +7,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
       this._onTerminal = this._onTerminal.bind(this);
       this._selectSpanNodesWithoutChildren = this._selectSpanNodesWithoutChildren.bind(this);
+      this._drawFrame = this._drawFrame.bind(this);
 
       globalShortcut.register('CommandOrControl+G', () => {
         console.log('CommandOrControl+G pressed');
@@ -14,8 +15,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
         console.log(this._rootDiv);
 
         const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
-        const container = this._copyElementsToSeparateContainer(elementsToAnimate);
+        this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
         this._hideOriginalElements(elementsToAnimate);
+        window.requestAnimationFrame(this._drawFrame);
       })
     }
 
@@ -23,6 +25,20 @@ exports.decorateTerm = (Term, { React, notify }) => {
       return React.createElement(Term, Object.assign({}, this.props, {
         onTerminal: this._onTerminal
       }));
+    }
+
+    _drawFrame() {
+      this._calculateNewElementPositions();
+      window.requestAnimationFrame(this._drawFrame);
+    }
+
+    _calculateNewElementPositions() {
+      const currentTimeInMillis = new Date().getTime();
+
+      for (var element of this._container.children) {
+        element.style.top = 200 + 50*Math.sin(
+          currentTimeInMillis*0.005 + parseInt(element.style.left)*0.005) + 'px';
+      }
     }
 
     _onTerminal (term) {
