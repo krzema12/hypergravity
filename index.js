@@ -8,6 +8,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._onTerminal = this._onTerminal.bind(this);
       this._selectSpanNodesWithoutChildren = this._selectSpanNodesWithoutChildren.bind(this);
       this._drawFrame = this._drawFrame.bind(this);
+      this._elements = [];
 
       globalShortcut.register('CommandOrControl+G', () => {
         console.log('Gravity mode enabled');
@@ -33,9 +34,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
     _calculateNewElementPositions() {
       const currentTimeInMillis = new Date().getTime();
 
-      for (var element of this._container.children) {
-        element.style.top = 200 + 50*Math.sin(
-          currentTimeInMillis*0.005 + parseInt(element.style.left)*0.005) + 'px';
+      for (var element of this._elements) {
+        element.y = 200 + 50*Math.sin(currentTimeInMillis*0.005 + element.x*0.005);
+        element.updatePosition();
       }
     }
 
@@ -79,6 +80,19 @@ exports.decorateTerm = (Term, { React, notify }) => {
         const valueToPreservePixelPerfectPosition = 1; // TODO understand why and remove it.
         clonedNode.style.top = boundingBox.top + valueToPreservePixelPerfectPosition + 'px';
         clonedNode.style.left = boundingBox.left + 'px';
+
+        this._elements.push({
+          x: boundingBox.left + boundingBox.width/2,
+          y: boundingBox.top + boundingBox.height/2,
+          width: boundingBox.width,
+          height: boundingBox.height,
+          rotation: 0,
+          domElement: clonedNode,
+          updatePosition: function() {
+            this.domElement.style.left = this.x - this.width/2 + 'px';
+            this.domElement.style.top = this.y - this.height/2 + 'px';
+          }
+        });
 
         separateContainer.appendChild(clonedNode);
       }
