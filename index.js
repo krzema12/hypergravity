@@ -6,11 +6,14 @@ exports.decorateTerm = (Term, { React, notify }) => {
       super(props, context);
 
       this._onTerminal = this._onTerminal.bind(this);
+      this._selectSpanNodesWithoutChildren = this._selectSpanNodesWithoutChildren.bind(this);
 
       globalShortcut.register('CommandOrControl+G', () => {
         console.log('CommandOrControl+G pressed');
         console.log('Root div:');
         console.log(this._rootDiv);
+
+        console.log(this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren));
       })
     }
 
@@ -26,6 +29,42 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
 
       this._rootDiv = term.div_;
+    }
+
+    _selectDOMElementsToAnimate(shouldSelectThisElement) {
+      var stack = [this._rootDiv];
+      var elementsToAnimate = [];
+
+      while (stack.length > 0) {
+        const elementFromTop = stack.pop();
+
+        if (shouldSelectThisElement(elementFromTop)) {
+          elementsToAnimate.push(elementFromTop);
+        }
+
+        this._pushChildrenToStack(stack, elementFromTop);
+      }
+
+      return elementsToAnimate;
+    }
+
+    _getChildren(element) {
+      if (element.nodeName === 'IFRAME') {
+        return element.contentWindow.document.body.children;
+      }
+
+      return element.children;
+    }
+
+    _pushChildrenToStack(stack, element) {
+      const children = this._getChildren(element);
+      for (var i = 0; i < children.length; i++) {
+        stack.push(children[i]);
+      }
+    }
+
+    _selectSpanNodesWithoutChildren(element) {
+      return element.nodeName === 'SPAN' && this._getChildren(element).length === 0;
     }
   }
 };
