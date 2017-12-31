@@ -15,6 +15,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
         const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
         const container = this._copyElementsToSeparateContainer(elementsToAnimate);
+        this._hideOriginalElements(elementsToAnimate);
       })
     }
 
@@ -33,27 +34,38 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _selectDOMElementsToAnimate(shouldSelectThisElement) {
-      var stack = [this._rootDiv];
+      var queue = [this._rootDiv];
       var elementsToAnimate = [];
 
-      while (stack.length > 0) {
-        const elementFromTop = stack.pop();
+      while (queue.length > 0) {
+        const elementFromTop = queue.shift();
 
         if (shouldSelectThisElement(elementFromTop)) {
           elementsToAnimate.push(elementFromTop);
         }
 
-        this._pushChildrenToStack(stack, elementFromTop);
+        this._enqueueChildren(queue, elementFromTop);
       }
 
       return elementsToAnimate;
     }
 
     _copyElementsToSeparateContainer(elements) {
-      const separateContainer = window.document.createElement('div');
+      var separateContainer = window.document.createElement('div');
 
       for (var i = 0; i < elements.length; i++) {
-        var clonedNode = elements[i].cloneNode(true);
+        const currentNode = elements[i];
+        var clonedNode = currentNode.cloneNode(true);
+        var clonedStyle = window.getComputedStyle(currentNode).cssText;
+        clonedNode.style.cssText = clonedStyle;
+        clonedNode.style.display = 'block';
+        clonedNode.style.position = 'absolute';
+
+        const boundingBox = currentNode.getBoundingClientRect();
+        const valueToPreservePixelPerfectPosition = 1; // TODO understand why and remove it.
+        clonedNode.style.top = boundingBox.top + valueToPreservePixelPerfectPosition + 'px';
+        clonedNode.style.left = boundingBox.left + 'px';
+
         separateContainer.appendChild(clonedNode);
       }
 
@@ -69,15 +81,22 @@ exports.decorateTerm = (Term, { React, notify }) => {
       return element.children;
     }
 
-    _pushChildrenToStack(stack, element) {
+    _enqueueChildren(queue, element) {
       const children = this._getChildren(element);
       for (var i = 0; i < children.length; i++) {
-        stack.push(children[i]);
+        queue.push(children[i]);
       }
     }
 
     _selectSpanNodesWithoutChildren(element) {
       return element.nodeName === 'SPAN' && this._getChildren(element).length === 0;
+    }
+
+    _hideOriginalElements(elements) {
+      console.log(elements);
+      for (var i = 0; i < elements.length; i++) {
+        elements[i].style.visibility = 'hidden';
+      }
     }
   }
 };
