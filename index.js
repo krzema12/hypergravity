@@ -13,7 +13,8 @@ exports.decorateTerm = (Term, { React, notify }) => {
         console.log('Root div:');
         console.log(this._rootDiv);
 
-        console.log(this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren));
+        const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
+        const container = this._copyElementsToSeparateContainer(elementsToAnimate);
       })
     }
 
@@ -46,6 +47,18 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
 
       return elementsToAnimate;
+    }
+
+    _copyElementsToSeparateContainer(elements) {
+      const separateContainer = window.document.createElement('div');
+
+      for (var i = 0; i < elements.length; i++) {
+        var clonedNode = elements[i].cloneNode(true);
+        separateContainer.appendChild(clonedNode);
+      }
+
+      this._rootDiv.appendChild(separateContainer);
+      return separateContainer;
     }
 
     _getChildren(element) {
