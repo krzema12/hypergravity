@@ -10,9 +10,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._drawFrame = this._drawFrame.bind(this);
 
       globalShortcut.register('CommandOrControl+G', () => {
-        console.log('CommandOrControl+G pressed');
-        console.log('Root div:');
-        console.log(this._rootDiv);
+        console.log('Gravity mode enabled');
 
         const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
         this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
@@ -109,7 +107,6 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _hideOriginalElements(elements) {
-      console.log(elements);
       for (var i = 0; i < elements.length; i++) {
         elements[i].style.visibility = 'hidden';
       }
