@@ -110,6 +110,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
         physicsBody.element.x = physicsBody.position.x;
         physicsBody.element.y = physicsBody.position.y;
+        physicsBody.element.rotation = physicsBody.angle;
         physicsBody.element.updatePosition();
       }
     }
@@ -165,6 +166,8 @@ exports.decorateTerm = (Term, { React, notify }) => {
           updatePosition: function() {
             this.domElement.style.left = this.x - this.width/2 + 'px';
             this.domElement.style.top = this.y - this.height/2 + 'px';
+            this.domElement.style.transform = 'rotate(' + (this.rotation*180.0/Math.PI) + 'deg)';
+            this.domElement.style.transformOrigin = 'center center';
           }
         });
 
