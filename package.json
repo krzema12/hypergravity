@@ -7,5 +7,8 @@
     "hyper-plugin",
     "gravity"
   ],
-  "description": "Extension for Hyper terminal to add some fancy physics to your text!"
+  "description": "Extension for Hyper terminal to add some fancy physics to your text!",
+  "dependencies": {
+    "matter-js": "^0.14.0"
+  }
 }

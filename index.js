@@ -1,4 +1,8 @@
 const globalShortcut = require('electron').remote.globalShortcut;
+const Matter = require('matter-js');
+const PhysicsEngine = Matter.Engine;
+const PhysicsWorld = Matter.World;
+const PhysicsBodies = Matter.Bodies;
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
@@ -15,6 +19,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
         const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
         this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
+        this._createPhysicsWorld();
         this._hideOriginalElements(elementsToAnimate);
         window.requestAnimationFrame(this._drawFrame);
       })
@@ -31,12 +36,62 @@ exports.decorateTerm = (Term, { React, notify }) => {
       window.requestAnimationFrame(this._drawFrame);
     }
 
-    _calculateNewElementPositions() {
-      const currentTimeInMillis = new Date().getTime();
+    _createPhysicsWorld() {
+      const rootDivBoundingBox = this._rootDiv.getBoundingClientRect();
+
+      this._physicsEngine = PhysicsEngine.create();
+      this._physicsWorld = this._physicsEngine.world;
+
+      var physicsBodies = [];
 
       for (var element of this._elements) {
-        element.y = 200 + 50*Math.sin(currentTimeInMillis*0.005 + element.x*0.005);
-        element.updatePosition();
+        physicsBodies.push(PhysicsBodies.rectangle(
+          element.x, element.y, element.width, element.height, { element: element }));
+      }
+
+      var bottomWall = PhysicsBodies.rectangle(
+        (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
+        0,
+        rootDivBoundingBox.width,
+        10,
+        { isStatic: true });
+      var topWall = PhysicsBodies.rectangle(
+        (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
+        rootDivBoundingBox.height,
+        rootDivBoundingBox.width,
+        10,
+        { isStatic: true });
+      var leftWall = PhysicsBodies.rectangle(
+        0,
+        (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
+        10,
+        rootDivBoundingBox.height,
+        { isStatic: true });
+      var rightWall = PhysicsBodies.rectangle(
+        rootDivBoundingBox.width,
+        (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
+        10,
+        rootDivBoundingBox.height,
+        { isStatic: true });
+      physicsBodies.push(bottomWall);
+      physicsBodies.push(topWall);
+      physicsBodies.push(leftWall);
+      physicsBodies.push(rightWall);
+
+      PhysicsWorld.add(this._physicsWorld, physicsBodies);
+    }
+
+    _calculateNewElementPositions() {
+      PhysicsEngine.update(this._physicsEngine, 1000 / 60);
+
+      for (var physicsBody of this._physicsEngine.world.bodies) {
+        if (physicsBody.isStatic) {
+          continue;
+        }
+
+        physicsBody.element.x = physicsBody.position.x;
+        physicsBody.element.y = physicsBody.position.y;
+        physicsBody.element.updatePosition();
       }
     }
 
