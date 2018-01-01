@@ -3,6 +3,7 @@ const Matter = require('matter-js');
 const PhysicsEngine = Matter.Engine;
 const PhysicsWorld = Matter.World;
 const PhysicsBodies = Matter.Bodies;
+const PhysicsRender = Matter.Render;
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
@@ -79,6 +80,24 @@ exports.decorateTerm = (Term, { React, notify }) => {
       physicsBodies.push(rightWall);
 
       PhysicsWorld.add(this._physicsWorld, physicsBodies);
+
+      // this._enableBodiesBoundariesPreview(rootDivBoundingBox);
+    }
+
+    _enableBodiesBoundariesPreview(rootDivBoundingBox) {
+      var physicsPreviewElement = window.document.createElement('div');
+      this._rootDiv.appendChild(physicsPreviewElement);
+
+      var renderer = PhysicsRender.create({
+        element: physicsPreviewElement,
+        engine: this._physicsEngine,
+        options: {
+            width: rootDivBoundingBox.width,
+            height: rootDivBoundingBox.height
+          }
+      });
+
+      PhysicsRender.run(renderer);
     }
 
     _calculateNewElementPositions() {
