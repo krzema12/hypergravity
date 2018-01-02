@@ -11,14 +11,14 @@ exports.decorateTerm = (Term, { React, notify }) => {
       super(props, context);
 
       this._onTerminal = this._onTerminal.bind(this);
-      this._selectSpanNodesWithoutChildren = this._selectSpanNodesWithoutChildren.bind(this);
+      this._selectSpanNodesWithoutChildrenAndCursor = this._selectSpanNodesWithoutChildrenAndCursor.bind(this);
       this._drawFrame = this._drawFrame.bind(this);
       this._elements = [];
 
       globalShortcut.register('CommandOrControl+G', () => {
         console.log('Gravity mode enabled');
 
-        const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildren);
+        const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildrenAndCursor);
         this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
         this._createPhysicsWorld();
         this._hideOriginalElements(elementsToAnimate);
@@ -193,8 +193,16 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
     }
 
-    _selectSpanNodesWithoutChildren(element) {
+    _selectSpanNodesWithoutChildrenAndCursor(element) {
+      return this._isTextElementWithoutChildren(element) || this._isCursor(element);
+    }
+
+    _isTextElementWithoutChildren(element) {
       return element.nodeName === 'SPAN' && this._getChildren(element).length === 0;
+    }
+
+    _isCursor(element) {
+      return element.className === 'cursor-node';
     }
 
     _hideOriginalElements(elements) {
