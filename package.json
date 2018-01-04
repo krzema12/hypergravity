@@ -7,8 +7,20 @@
     "hyper-plugin",
     "gravity"
   ],
+  "files": [
+    "dist/hypergravity.js"
+  ],
+  "scripts": {
+    "build": "npx webpack"
+  },
   "description": "Extension for Hyper terminal to add some fancy physics to your text!",
   "dependencies": {
     "matter-js": "^0.14.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "webpack": "^3.10.0"
   }
 }
