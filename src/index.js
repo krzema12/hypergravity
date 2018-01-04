@@ -1,8 +1,8 @@
-const Matter = require('matter-js');
-const PhysicsEngine = Matter.Engine;
-const PhysicsWorld = Matter.World;
-const PhysicsBodies = Matter.Bodies;
-const PhysicsRender = Matter.Render;
+import {
+  Engine as PhysicsEngine,
+  World as PhysicsWorld,
+  Bodies as PhysicsBodies,
+  Render as PhysicsEnder } from 'matter-js';
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
@@ -32,32 +32,32 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._physicsEngine = PhysicsEngine.create();
       this._physicsWorld = this._physicsEngine.world;
 
-      var physicsBodies = [];
+      let physicsBodies = [];
 
-      for (var element of this._elements) {
+      for (let element of this._elements) {
         physicsBodies.push(PhysicsBodies.rectangle(
           element.x, element.y, element.width, element.height, { element: element }));
       }
 
-      var bottomWall = PhysicsBodies.rectangle(
+      let bottomWall = PhysicsBodies.rectangle(
         (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
         0,
         rootDivBoundingBox.width,
         10,
         { isStatic: true });
-      var topWall = PhysicsBodies.rectangle(
+      let topWall = PhysicsBodies.rectangle(
         (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
         rootDivBoundingBox.height,
         rootDivBoundingBox.width,
         10,
         { isStatic: true });
-      var leftWall = PhysicsBodies.rectangle(
+      let leftWall = PhysicsBodies.rectangle(
         0,
         (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
         10,
         rootDivBoundingBox.height,
         { isStatic: true });
-      var rightWall = PhysicsBodies.rectangle(
+      let rightWall = PhysicsBodies.rectangle(
         rootDivBoundingBox.width,
         (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
         10,
@@ -74,10 +74,10 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _enableBodiesBoundariesPreview(rootDivBoundingBox) {
-      var physicsPreviewElement = window.document.createElement('div');
+      let physicsPreviewElement = window.document.createElement('div');
       this._rootDiv.appendChild(physicsPreviewElement);
 
-      var renderer = PhysicsRender.create({
+      let renderer = PhysicsRender.create({
         element: physicsPreviewElement,
         engine: this._physicsEngine,
         options: {
@@ -92,7 +92,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
     _calculateNewElementPositions() {
       PhysicsEngine.update(this._physicsEngine, 1000 / 60);
 
-      for (var physicsBody of this._physicsEngine.world.bodies) {
+      for (let physicsBody of this._physicsEngine.world.bodies) {
         if (physicsBody.isStatic) {
           continue;
         }
@@ -131,13 +131,13 @@ exports.decorateTerm = (Term, { React, notify }) => {
       ];
 
       term.uninstallKeyboard();
-      term.keyboard.handlers_ = [activatingKeyShortcutHandler].concat(term.keyboard.handlers_);
+      term.keyboard.handlers_ = [...term.keyboard.handlers_, activatingKeyShortcutHandler];
       term.installKeyboard();
     }
 
     _selectDOMElementsToAnimate(shouldSelectThisElement) {
-      var queue = [this._rootDiv];
-      var elementsToAnimate = [];
+      let queue = [this._rootDiv];
+      let elementsToAnimate = [];
 
       while (queue.length > 0) {
         const elementFromTop = queue.shift();
@@ -153,12 +153,12 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _copyElementsToSeparateContainer(elements) {
-      var separateContainer = window.document.createElement('div');
+      let separateContainer = window.document.createElement('div');
 
-      for (var i = 0; i < elements.length; i++) {
+      for (let i = 0; i < elements.length; i++) {
         const currentNode = elements[i];
-        var clonedNode = currentNode.cloneNode(true);
-        var clonedStyle = window.getComputedStyle(currentNode).cssText;
+        let clonedNode = currentNode.cloneNode(true);
+        let clonedStyle = window.getComputedStyle(currentNode).cssText;
         clonedNode.style.cssText = clonedStyle;
         clonedNode.style.display = 'block';
         clonedNode.style.position = 'absolute';
@@ -200,7 +200,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
     _enqueueChildren(queue, element) {
       const children = this._getChildren(element);
-      for (var i = 0; i < children.length; i++) {
+      for (let i = 0; i < children.length; i++) {
         queue.push(children[i]);
       }
     }
@@ -218,7 +218,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _hideOriginalElements(elements) {
-      for (var i = 0; i < elements.length; i++) {
+      for (let i = 0; i < elements.length; i++) {
         elements[i].style.visibility = 'hidden';
       }
     }
