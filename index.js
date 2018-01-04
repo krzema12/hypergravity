@@ -1,4 +1,3 @@
-const globalShortcut = require('electron').remote.globalShortcut;
 const Matter = require('matter-js');
 const PhysicsEngine = Matter.Engine;
 const PhysicsWorld = Matter.World;
@@ -14,16 +13,6 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._selectSpanNodesWithoutChildrenAndCursor = this._selectSpanNodesWithoutChildrenAndCursor.bind(this);
       this._drawFrame = this._drawFrame.bind(this);
       this._elements = [];
-
-      globalShortcut.register('CommandOrControl+G', () => {
-        console.log('Gravity mode enabled');
-
-        const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildrenAndCursor);
-        this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
-        this._createPhysicsWorld();
-        this._hideOriginalElements(elementsToAnimate);
-        window.requestAnimationFrame(this._drawFrame);
-      })
     }
 
     render () {
@@ -121,6 +110,29 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
 
       this._rootDiv = term.div_;
+
+      this._addKeyboardShortcutHandler(term);
+    }
+
+    _addKeyboardShortcutHandler(term) {
+      const activatingKeyShortcutHandler = [
+        "keydown",
+        function(e) {
+          if (e.metaKey && e.keyCode === 'G'.charCodeAt(0)) {
+            console.log('Gravity mode enabled');
+
+            const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildrenAndCursor);
+            this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
+            this._createPhysicsWorld();
+            this._hideOriginalElements(elementsToAnimate);
+            window.requestAnimationFrame(this._drawFrame);
+          }
+        }.bind(this)
+      ];
+
+      term.uninstallKeyboard();
+      term.keyboard.handlers_ = [activatingKeyShortcutHandler].concat(term.keyboard.handlers_);
+      term.installKeyboard();
     }
 
     _selectDOMElementsToAnimate(shouldSelectThisElement) {
