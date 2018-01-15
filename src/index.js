@@ -39,13 +39,13 @@ exports.decorateTerm = (Term, { React, notify }) => {
           element.x, element.y, element.width, element.height, { element: element }));
       }
 
-      let bottomWall = PhysicsBodies.rectangle(
+      let topWall = PhysicsBodies.rectangle(
         (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
         0,
         rootDivBoundingBox.width,
         10,
         { isStatic: true });
-      let topWall = PhysicsBodies.rectangle(
+      let bottomWall = PhysicsBodies.rectangle(
         (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
         rootDivBoundingBox.height,
         rootDivBoundingBox.width,
@@ -63,8 +63,8 @@ exports.decorateTerm = (Term, { React, notify }) => {
         10,
         rootDivBoundingBox.height,
         { isStatic: true });
-      physicsBodies.push(bottomWall);
       physicsBodies.push(topWall);
+      physicsBodies.push(bottomWall);
       physicsBodies.push(leftWall);
       physicsBodies.push(rightWall);
 
