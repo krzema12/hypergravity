@@ -2,7 +2,7 @@ import {
   Engine as PhysicsEngine,
   World as PhysicsWorld,
   Bodies as PhysicsBodies,
-  Render as PhysicsEnder } from 'matter-js';
+  Render as PhysicsRender } from 'matter-js';
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
