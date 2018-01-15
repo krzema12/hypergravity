@@ -1,8 +1,4 @@
-import {
-  Engine as PhysicsEngine,
-  World as PhysicsWorld,
-  Bodies as PhysicsBodies,
-  Render as PhysicsRender } from 'matter-js';
+import GravityAnimationModel from './GravityAnimationModel';
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
@@ -29,78 +25,25 @@ exports.decorateTerm = (Term, { React, notify }) => {
     _createPhysicsWorld() {
       const rootDivBoundingBox = this._rootDiv.getBoundingClientRect();
 
-      this._physicsEngine = PhysicsEngine.create();
-      this._physicsWorld = this._physicsEngine.world;
+      const options = {
+        // physicsPreviewElement: this._createAndRegisterPhysicsPreviewElement()
+      };
 
-      let physicsBodies = [];
-
-      for (let element of this._elements) {
-        physicsBodies.push(PhysicsBodies.rectangle(
-          element.x, element.y, element.width, element.height, { element: element }));
-      }
-
-      let topWall = PhysicsBodies.rectangle(
-        (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
-        0,
-        rootDivBoundingBox.width,
-        10,
-        { isStatic: true });
-      let bottomWall = PhysicsBodies.rectangle(
-        (rootDivBoundingBox.right - rootDivBoundingBox.left)/2,
-        rootDivBoundingBox.height,
-        rootDivBoundingBox.width,
-        10,
-        { isStatic: true });
-      let leftWall = PhysicsBodies.rectangle(
-        0,
-        (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
-        10,
-        rootDivBoundingBox.height,
-        { isStatic: true });
-      let rightWall = PhysicsBodies.rectangle(
-        rootDivBoundingBox.width,
-        (rootDivBoundingBox.bottom - rootDivBoundingBox.top)/2,
-        10,
-        rootDivBoundingBox.height,
-        { isStatic: true });
-      physicsBodies.push(topWall);
-      physicsBodies.push(bottomWall);
-      physicsBodies.push(leftWall);
-      physicsBodies.push(rightWall);
-
-      PhysicsWorld.add(this._physicsWorld, physicsBodies);
-
-      // this._enableBodiesBoundariesPreview(rootDivBoundingBox);
+      this._animationModel = new GravityAnimationModel(rootDivBoundingBox, this._elements, options);
     }
 
-    _enableBodiesBoundariesPreview(rootDivBoundingBox) {
+    _createAndRegisterPhysicsPreviewElement() {
       let physicsPreviewElement = window.document.createElement('div');
       this._rootDiv.appendChild(physicsPreviewElement);
 
-      let renderer = PhysicsRender.create({
-        element: physicsPreviewElement,
-        engine: this._physicsEngine,
-        options: {
-            width: rootDivBoundingBox.width,
-            height: rootDivBoundingBox.height
-          }
-      });
-
-      PhysicsRender.run(renderer);
+      return physicsPreviewElement;
     }
 
     _calculateNewElementPositions() {
-      PhysicsEngine.update(this._physicsEngine, 1000 / 60);
+      const updatedElements = this._animationModel.getElementsForNextFrame(1000/60);
 
-      for (let physicsBody of this._physicsEngine.world.bodies) {
-        if (physicsBody.isStatic) {
-          continue;
-        }
-
-        physicsBody.element.x = physicsBody.position.x;
-        physicsBody.element.y = physicsBody.position.y;
-        physicsBody.element.rotation = physicsBody.angle;
-        physicsBody.element.updatePosition();
+      for (let element of updatedElements) {
+        element.updatePosition();
       }
     }
 
