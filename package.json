@@ -7,9 +7,6 @@
     "hyper-plugin",
     "gravity"
   ],
-  "files": [
-    "dist/hypergravity.js"
-  ],
   "scripts": {
     "build": "npx webpack"
   },
