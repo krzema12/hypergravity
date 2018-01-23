@@ -4,15 +4,11 @@ import DOMUtils from './DOMUtils';
 
 class TopLevelNodesElementSelectionStrategy extends ElementSelectionStrategy {
   shouldAnimateElement(element) {
-    return this._selectSpanNodesWithoutChildrenAndWithCursor(element);
+    return this._isChildOfRowElement(element) || this._isCursor(element);
   }
 
-  _selectSpanNodesWithoutChildrenAndWithCursor(element) {
-    return this._isTextElementWithoutChildren(element) || this._isCursor(element);
-  }
-
-  _isTextElementWithoutChildren(element) {
-    return element.nodeName === 'SPAN' && DOMUtils.getChildren(element).length === 0;
+  _isChildOfRowElement(element) {
+    return element.parentNode.nodeName === 'X-ROW';
   }
 
   _isCursor(element) {
