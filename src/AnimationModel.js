@@ -11,6 +11,10 @@ class AnimationModel {
   getElementsForNextFrame(deltaSeconds) {
     throw new TypeError('AnimationModel.getElementsForNextFrame is abstract, cannot call it!');
   }
+
+  tearDown() {
+    throw new TypeError('AnimationModel.tearDown is abstract, cannot call it!');
+  }
 }
 
 export default AnimationModel;

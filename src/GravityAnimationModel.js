@@ -51,6 +51,10 @@ class GravityAnimationModel extends AnimationModel {
     return elementsToReturn;
   }
 
+  tearDown() {
+    PhysicsRender.stop(this._renderer);
+  }
+
   _addPhysicsBodies(physicsEngine, boundingBox, elements) {
     const walls = this._createWalls(boundingBox);
     const animatableBodies = this._createAnimatableBodies(elements);
@@ -58,7 +62,7 @@ class GravityAnimationModel extends AnimationModel {
   }
 
   _configurePhysicsPreview(physicsEngine, domElement, boundingBox) {
-    const renderer = PhysicsRender.create({
+    this._renderer = PhysicsRender.create({
       element: domElement,
       engine: physicsEngine,
       options: {
@@ -67,7 +71,7 @@ class GravityAnimationModel extends AnimationModel {
         }
     });
 
-    PhysicsRender.run(renderer);
+    PhysicsRender.run(this._renderer);
   }
 
   _createWalls(boundingBox) {

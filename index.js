@@ -133,10 +133,14 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _createAndRegisterPhysicsPreviewElement() {
-      let physicsPreviewElement = window.document.createElement('div');
-      this._rootDiv.appendChild(physicsPreviewElement);
+      this._physicsPreviewElement = window.document.createElement('div');
+      this._rootDiv.appendChild(this._physicsPreviewElement);
 
-      return physicsPreviewElement;
+      return this._physicsPreviewElement;
+    }
+
+    _destroyPhysicsPreviewElement() {
+      this._rootDiv.removeChild(this._physicsPreviewElement);
     }
 
     _calculateNewElementPositions() {
@@ -193,6 +197,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
     _disableGravityMode() {
       this._setElementsVisibility(this._elementsToAnimate, 'visible');
       this._rootDiv.removeChild(this._container);
+      this._animationModel.tearDown();
+      this._destroyPhysicsPreviewElement();
+      this._animationModel = null;
       this._isGravityEnabled = false;
     }
 
@@ -375,6 +382,10 @@ class GravityAnimationModel extends __WEBPACK_IMPORTED_MODULE_1__AnimationModel_
     return elementsToReturn;
   }
 
+  tearDown() {
+    __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].stop(this._renderer);
+  }
+
   _addPhysicsBodies(physicsEngine, boundingBox, elements) {
     const walls = this._createWalls(boundingBox);
     const animatableBodies = this._createAnimatableBodies(elements);
@@ -382,7 +393,7 @@ class GravityAnimationModel extends __WEBPACK_IMPORTED_MODULE_1__AnimationModel_
   }
 
   _configurePhysicsPreview(physicsEngine, domElement, boundingBox) {
-    const renderer = __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].create({
+    this._renderer = __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].create({
       element: domElement,
       engine: physicsEngine,
       options: {
@@ -391,7 +402,7 @@ class GravityAnimationModel extends __WEBPACK_IMPORTED_MODULE_1__AnimationModel_
         }
     });
 
-    __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].run(renderer);
+    __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].run(this._renderer);
   }
 
   _createWalls(boundingBox) {
@@ -10827,6 +10838,10 @@ class AnimationModel {
 
   getElementsForNextFrame(deltaSeconds) {
     throw new TypeError('AnimationModel.getElementsForNextFrame is abstract, cannot call it!');
+  }
+
+  tearDown() {
+    throw new TypeError('AnimationModel.tearDown is abstract, cannot call it!');
   }
 }
 

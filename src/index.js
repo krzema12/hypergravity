@@ -41,10 +41,14 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _createAndRegisterPhysicsPreviewElement() {
-      let physicsPreviewElement = window.document.createElement('div');
-      this._rootDiv.appendChild(physicsPreviewElement);
+      this._physicsPreviewElement = window.document.createElement('div');
+      this._rootDiv.appendChild(this._physicsPreviewElement);
 
-      return physicsPreviewElement;
+      return this._physicsPreviewElement;
+    }
+
+    _destroyPhysicsPreviewElement() {
+      this._rootDiv.removeChild(this._physicsPreviewElement);
     }
 
     _calculateNewElementPositions() {
@@ -101,6 +105,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
     _disableGravityMode() {
       this._setElementsVisibility(this._elementsToAnimate, 'visible');
       this._rootDiv.removeChild(this._container);
+      this._animationModel.tearDown();
+      this._destroyPhysicsPreviewElement();
+      this._animationModel = null;
       this._isGravityEnabled = false;
     }
 
