@@ -1,5 +1,7 @@
 # Hypergravity - gravity simulation in Hyper terminal
 
+![Animated demo](images/Demo.gif)
+
 ## How to install and use it
 
 1. Open `~/.hyper.js` and add `hypergravity` in the proper place:
