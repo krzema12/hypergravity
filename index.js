@@ -140,7 +140,12 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _destroyPhysicsPreviewElement() {
+      if (!this._physicsPreviewElement) {
+        return;
+      }
+
       this._rootDiv.removeChild(this._physicsPreviewElement);
+      this._physicsPreviewElement = null;
     }
 
     _calculateNewElementPositions() {
@@ -384,7 +389,9 @@ class GravityAnimationModel extends __WEBPACK_IMPORTED_MODULE_1__AnimationModel_
   }
 
   tearDown() {
-    __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].stop(this._renderer);
+    if (this._renderer) {
+      __WEBPACK_IMPORTED_MODULE_0_matter_js__["Render"].stop(this._renderer);
+    }
   }
 
   _addPhysicsBodies(physicsEngine, boundingBox, elements) {

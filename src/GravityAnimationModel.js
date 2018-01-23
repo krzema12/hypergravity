@@ -52,7 +52,9 @@ class GravityAnimationModel extends AnimationModel {
   }
 
   tearDown() {
-    PhysicsRender.stop(this._renderer);
+    if (this._renderer) {
+      PhysicsRender.stop(this._renderer);
+    }
   }
 
   _addPhysicsBodies(physicsEngine, boundingBox, elements) {

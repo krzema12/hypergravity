@@ -48,7 +48,12 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _destroyPhysicsPreviewElement() {
+      if (!this._physicsPreviewElement) {
+        return;
+      }
+
       this._rootDiv.removeChild(this._physicsPreviewElement);
+      this._physicsPreviewElement = null;
     }
 
     _calculateNewElementPositions() {
