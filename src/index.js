@@ -1,4 +1,7 @@
+import TopLevelNodesElementSelectionStrategy from './TopLevelNodesElementSelectionStrategy';
 import GravityAnimationModel from './GravityAnimationModel';
+
+import DOMUtils from './DOMUtils';
 
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
@@ -6,9 +9,10 @@ exports.decorateTerm = (Term, { React, notify }) => {
       super(props, context);
 
       this._onTerminal = this._onTerminal.bind(this);
-      this._selectSpanNodesWithoutChildrenAndCursor = this._selectSpanNodesWithoutChildrenAndCursor.bind(this);
       this._drawFrame = this._drawFrame.bind(this);
+      this._selectDOMElementsToAnimate = this._selectDOMElementsToAnimate.bind(this);
       this._elements = [];
+      this._elmentSelectionStrategy = new TopLevelNodesElementSelectionStrategy();
     }
 
     render () {
@@ -64,7 +68,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
           if (e.metaKey && e.keyCode === 'G'.charCodeAt(0)) {
             console.log('Gravity mode enabled');
 
-            const elementsToAnimate = this._selectDOMElementsToAnimate(this._selectSpanNodesWithoutChildrenAndCursor);
+            const elementsToAnimate = this._selectDOMElementsToAnimate();
             this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
             this._createPhysicsWorld();
             this._hideOriginalElements(elementsToAnimate);
@@ -78,14 +82,14 @@ exports.decorateTerm = (Term, { React, notify }) => {
       term.installKeyboard();
     }
 
-    _selectDOMElementsToAnimate(shouldSelectThisElement) {
+    _selectDOMElementsToAnimate() {
       let queue = [this._rootDiv];
       let elementsToAnimate = [];
 
       while (queue.length > 0) {
         const elementFromTop = queue.shift();
 
-        if (shouldSelectThisElement(elementFromTop)) {
+        if (this._elmentSelectionStrategy.shouldAnimateElement(elementFromTop)) {
           elementsToAnimate.push(elementFromTop);
         }
 
@@ -133,31 +137,11 @@ exports.decorateTerm = (Term, { React, notify }) => {
       return separateContainer;
     }
 
-    _getChildren(element) {
-      if (element.nodeName === 'IFRAME') {
-        return element.contentWindow.document.body.children;
-      }
-
-      return element.children;
-    }
-
     _enqueueChildren(queue, element) {
-      const children = this._getChildren(element);
+      const children = DOMUtils.getChildren(element);
       for (let i = 0; i < children.length; i++) {
         queue.push(children[i]);
       }
-    }
-
-    _selectSpanNodesWithoutChildrenAndCursor(element) {
-      return this._isTextElementWithoutChildren(element) || this._isCursor(element);
-    }
-
-    _isTextElementWithoutChildren(element) {
-      return element.nodeName === 'SPAN' && this._getChildren(element).length === 0;
-    }
-
-    _isCursor(element) {
-      return element.className === 'cursor-node';
     }
 
     _hideOriginalElements(elements) {
