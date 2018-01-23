@@ -108,6 +108,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._animationModel.tearDown();
       this._destroyPhysicsPreviewElement();
       this._animationModel = null;
+      this._elements = [];
       this._isGravityEnabled = false;
     }
 
