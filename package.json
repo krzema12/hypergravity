@@ -1,6 +1,12 @@
 {
   "name": "hypergravity",
+  "description": "Extension for Hyper terminal to add some fancy physics to your text!",
   "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krzema12/hypergravity.git"
+  },
   "keywords": [
     "hyper",
     "hyper.app",
@@ -10,7 +16,6 @@
   "scripts": {
     "build": "npx webpack"
   },
-  "description": "Extension for Hyper terminal to add some fancy physics to your text!",
   "dependencies": {
     "matter-js": "^0.14.0"
   },
