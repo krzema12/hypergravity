@@ -22,6 +22,10 @@ exports.decorateTerm = (Term, { React, notify }) => {
     }
 
     _drawFrame() {
+      if (!this._isGravityEnabled) {
+        return;
+      }
+
       this._calculateNewElementPositions();
       window.requestAnimationFrame(this._drawFrame);
     }
@@ -66,13 +70,8 @@ exports.decorateTerm = (Term, { React, notify }) => {
         "keydown",
         function(e) {
           if (e.metaKey && e.keyCode === 'G'.charCodeAt(0)) {
-            console.log('Gravity mode enabled');
-
-            const elementsToAnimate = this._selectDOMElementsToAnimate();
-            this._container = this._copyElementsToSeparateContainer(elementsToAnimate);
-            this._createPhysicsWorld();
-            this._hideOriginalElements(elementsToAnimate);
-            window.requestAnimationFrame(this._drawFrame);
+            this._toggleGravityMode();
+            console.log('Gravity mode ' + (this._isGravityEnabled ? 'enabled' : 'disabled'));
           }
         }.bind(this)
       ];
@@ -80,6 +79,29 @@ exports.decorateTerm = (Term, { React, notify }) => {
       term.uninstallKeyboard();
       term.keyboard.handlers_ = [...term.keyboard.handlers_, activatingKeyShortcutHandler];
       term.installKeyboard();
+    }
+
+    _toggleGravityMode() {
+      if (this._isGravityEnabled) {
+        this._disableGravityMode();
+      } else {
+        this._enableGravityMode();
+      }
+    }
+
+    _enableGravityMode() {
+      this._elementsToAnimate = this._selectDOMElementsToAnimate();
+      this._container = this._copyElementsToSeparateContainer(this._elementsToAnimate);
+      this._createPhysicsWorld();
+      this._setElementsVisibility(this._elementsToAnimate, 'hidden');
+      window.requestAnimationFrame(this._drawFrame);
+      this._isGravityEnabled = true;
+    }
+
+    _disableGravityMode() {
+      this._setElementsVisibility(this._elementsToAnimate, 'visible');
+      this._rootDiv.removeChild(this._container);
+      this._isGravityEnabled = false;
     }
 
     _selectDOMElementsToAnimate() {
@@ -144,9 +166,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
     }
 
-    _hideOriginalElements(elements) {
+    _setElementsVisibility(elements, visibility) {
       for (let i = 0; i < elements.length; i++) {
-        elements[i].style.visibility = 'hidden';
+        elements[i].style.visibility = visibility;
       }
     }
   }
