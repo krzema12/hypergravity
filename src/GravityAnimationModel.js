@@ -5,7 +5,7 @@ import {
   Render as PhysicsRender } from 'matter-js';
 import AnimationModel from './AnimationModel';
 
-const WALL_THICKNESS = 10;
+const WALL_THICKNESS = 1000;
 
 /**
  * This animation model implements gravity.
