@@ -1,6 +1,6 @@
 # Hypergravity - gravity simulation in Hyper terminal
 
-![Animated demo](images/Demo.gif)
+![Animated demo](https://user-images.githubusercontent.com/3110813/35337934-d11d8afc-011c-11e8-9131-6c0bf23ec669.gif)
 
 ## How to install and use it
 
