@@ -100,15 +100,15 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
     _enableGravityMode() {
       this._elementsToAnimate = this._selectDOMElementsToAnimate();
+      this._setElementsVisibility(DOMUtils.getChildren(this._rootDiv), 'hidden');
       this._container = this._copyElementsToSeparateContainer(this._elementsToAnimate);
       this._createPhysicsWorld();
-      this._setElementsVisibility(this._elementsToAnimate, 'hidden');
       window.requestAnimationFrame(this._drawFrame);
       this._isGravityEnabled = true;
     }
 
     _disableGravityMode() {
-      this._setElementsVisibility(this._elementsToAnimate, 'visible');
+      this._setElementsVisibility(DOMUtils.getChildren(this._rootDiv), 'visible');
       this._rootDiv.removeChild(this._container);
       this._animationModel.tearDown();
       this._destroyPhysicsPreviewElement();
