@@ -94,25 +94,25 @@ class GravityAnimationModel extends AnimationModel {
   _createTopWall(boundingBox) {
     const positionX = this._middle(boundingBox.left, boundingBox.right);
     return PhysicsBodies.rectangle(
-      positionX, -WALL_THICKNESS/2, boundingBox.width, WALL_THICKNESS, { isStatic: true });
+      positionX, -WALL_THICKNESS/2, boundingBox.width + WALL_THICKNESS, WALL_THICKNESS, { isStatic: true });
   }
 
   _createBottomWall(boundingBox) {
     const positionX = this._middle(boundingBox.left, boundingBox.right);
     return PhysicsBodies.rectangle(
-      positionX, boundingBox.height + WALL_THICKNESS/2, boundingBox.width, WALL_THICKNESS, { isStatic: true });
+      positionX, boundingBox.height + WALL_THICKNESS/2, boundingBox.width + WALL_THICKNESS, WALL_THICKNESS, { isStatic: true });
   }
 
   _createLeftWall(boundingBox) {
     const positionY = this._middle(boundingBox.top, boundingBox.bottom);
     return PhysicsBodies.rectangle(
-      -WALL_THICKNESS/2, positionY, WALL_THICKNESS, boundingBox.height, { isStatic: true });
+      -WALL_THICKNESS/2, positionY, WALL_THICKNESS, boundingBox.height + WALL_THICKNESS, { isStatic: true });
   }
 
   _createRightWall(boundingBox) {
     const positionY = this._middle(boundingBox.top, boundingBox.bottom);
     return PhysicsBodies.rectangle(
-      boundingBox.width + WALL_THICKNESS/2, positionY, WALL_THICKNESS, boundingBox.height, { isStatic: true });
+      boundingBox.width + WALL_THICKNESS/2, positionY, WALL_THICKNESS, boundingBox.height + WALL_THICKNESS, { isStatic: true });
   }
 
   _middle(lower, higher) {
