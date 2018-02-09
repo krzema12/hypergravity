@@ -71,10 +71,10 @@
 class DOMUtils {
   static getChildren(element) {
     if (element.nodeName === 'IFRAME') {
-      return element.contentWindow.document.body.children;
+      return element.contentWindow.document.body.childNodes;
     }
 
-    return element.children;
+    return element.childNodes;
   }
 }
 
@@ -87,7 +87,7 @@ class DOMUtils {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TopLevelNodesElementSelectionStrategy__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__TextNodesElementSelectionStrategy__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GravityAnimationModel__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DOMUtils__ = __webpack_require__(0);
 
@@ -104,7 +104,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._drawFrame = this._drawFrame.bind(this);
       this._selectDOMElementsToAnimate = this._selectDOMElementsToAnimate.bind(this);
       this._elements = [];
-      this._elmentSelectionStrategy = new __WEBPACK_IMPORTED_MODULE_0__TopLevelNodesElementSelectionStrategy__["a" /* default */]();
+      this._elmentSelectionStrategy = new __WEBPACK_IMPORTED_MODULE_0__TextNodesElementSelectionStrategy__["a" /* default */]();
     }
 
     render () {
@@ -232,15 +232,30 @@ exports.decorateTerm = (Term, { React, notify }) => {
       for (let i = 0; i < elements.length; i++) {
         const currentNode = elements[i];
         let clonedNode = currentNode.cloneNode(true);
-        let clonedStyle = window.getComputedStyle(currentNode).cssText;
+        let objectToCalculateBoundingBox = currentNode;
+        let objectToCalculateStyle = currentNode;
+
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+          let spanWrapper = window.document.createElement('div');
+          spanWrapper.textContent = currentNode.textContent;
+          clonedNode = spanWrapper;
+
+          let range = document.createRange();
+          range.selectNodeContents(currentNode);
+          objectToCalculateBoundingBox = range;
+          objectToCalculateStyle = currentNode.parentNode;
+        }
+
+        let clonedStyle = window.getComputedStyle(objectToCalculateStyle).cssText;
         clonedNode.style.cssText = clonedStyle;
-        clonedNode.style.display = 'block';
         clonedNode.style.position = 'absolute';
 
-        const boundingBox = currentNode.getBoundingClientRect();
+        const boundingBox = objectToCalculateBoundingBox.getBoundingClientRect();
         const valueToPreservePixelPerfectPosition = 1; // TODO understand why and remove it.
         clonedNode.style.top = boundingBox.top + valueToPreservePixelPerfectPosition + 'px';
         clonedNode.style.left = boundingBox.left + 'px';
+        clonedNode.style.width = (boundingBox.right - boundingBox.left) + 'px';
+        clonedNode.style.height = (boundingBox.bottom - boundingBox.top) + 'px';
 
         this._elements.push({
           x: boundingBox.left + boundingBox.width/2,
@@ -293,11 +308,11 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
 class TopLevelNodesElementSelectionStrategy extends __WEBPACK_IMPORTED_MODULE_0__ElementSelectionStrategy__["a" /* default */] {
   shouldAnimateElement(element) {
-    return this._isChildOfRowElement(element) || this._isCursor(element);
+    return this._isNonEmptyTextNode(element) || this._isCursor(element);
   }
 
-  _isChildOfRowElement(element) {
-    return element.parentNode.nodeName === 'X-ROW';
+  _isNonEmptyTextNode(element) {
+    return element.nodeType === Node.TEXT_NODE && element.textContent.trim() !== '';
   }
 
   _isCursor(element) {

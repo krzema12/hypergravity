@@ -1,4 +1,4 @@
-import TopLevelNodesElementSelectionStrategy from './TopLevelNodesElementSelectionStrategy';
+import TextNodesElementSelectionStrategy from './TextNodesElementSelectionStrategy';
 import GravityAnimationModel from './GravityAnimationModel';
 
 import DOMUtils from './DOMUtils';
@@ -12,7 +12,7 @@ exports.decorateTerm = (Term, { React, notify }) => {
       this._drawFrame = this._drawFrame.bind(this);
       this._selectDOMElementsToAnimate = this._selectDOMElementsToAnimate.bind(this);
       this._elements = [];
-      this._elmentSelectionStrategy = new TopLevelNodesElementSelectionStrategy();
+      this._elmentSelectionStrategy = new TextNodesElementSelectionStrategy();
     }
 
     render () {
@@ -140,15 +140,30 @@ exports.decorateTerm = (Term, { React, notify }) => {
       for (let i = 0; i < elements.length; i++) {
         const currentNode = elements[i];
         let clonedNode = currentNode.cloneNode(true);
-        let clonedStyle = window.getComputedStyle(currentNode).cssText;
+        let objectToCalculateBoundingBox = currentNode;
+        let objectToCalculateStyle = currentNode;
+
+        if (currentNode.nodeType === Node.TEXT_NODE) {
+          let spanWrapper = window.document.createElement('div');
+          spanWrapper.textContent = currentNode.textContent;
+          clonedNode = spanWrapper;
+
+          let range = document.createRange();
+          range.selectNodeContents(currentNode);
+          objectToCalculateBoundingBox = range;
+          objectToCalculateStyle = currentNode.parentNode;
+        }
+
+        let clonedStyle = window.getComputedStyle(objectToCalculateStyle).cssText;
         clonedNode.style.cssText = clonedStyle;
-        clonedNode.style.display = 'block';
         clonedNode.style.position = 'absolute';
 
-        const boundingBox = currentNode.getBoundingClientRect();
+        const boundingBox = objectToCalculateBoundingBox.getBoundingClientRect();
         const valueToPreservePixelPerfectPosition = 1; // TODO understand why and remove it.
         clonedNode.style.top = boundingBox.top + valueToPreservePixelPerfectPosition + 'px';
         clonedNode.style.left = boundingBox.left + 'px';
+        clonedNode.style.width = (boundingBox.right - boundingBox.left) + 'px';
+        clonedNode.style.height = (boundingBox.bottom - boundingBox.top) + 'px';
 
         this._elements.push({
           x: boundingBox.left + boundingBox.width/2,

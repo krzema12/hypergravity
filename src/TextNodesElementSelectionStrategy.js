@@ -4,11 +4,11 @@ import DOMUtils from './DOMUtils';
 
 class TopLevelNodesElementSelectionStrategy extends ElementSelectionStrategy {
   shouldAnimateElement(element) {
-    return this._isChildOfRowElement(element) || this._isCursor(element);
+    return this._isNonEmptyTextNode(element) || this._isCursor(element);
   }
 
-  _isChildOfRowElement(element) {
-    return element.parentNode.nodeName === 'X-ROW';
+  _isNonEmptyTextNode(element) {
+    return element.nodeType === Node.TEXT_NODE && element.textContent.trim() !== '';
   }
 
   _isCursor(element) {
