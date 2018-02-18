@@ -11,7 +11,7 @@
     'hypergravity'
   ],
 ```
-2. Run Hyper and press Command + G to toggle gravity mode!
+2. Run Hyper and press `Command + G` (or `Control + G` on Linux and Windows) to toggle gravity mode!
 
 ## How to run it for development
 

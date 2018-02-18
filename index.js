@@ -170,7 +170,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
       const activatingKeyShortcutHandler = [
         "keydown",
         function(e) {
-          if (e.metaKey && e.keyCode === 'G'.charCodeAt(0)) {
+          if ((  (window.process.platform === 'darwin' &&  e.metaKey && !e.ctrlKey)
+              || (window.process.platform !== 'darwin' && !e.metaKey &&  e.ctrlKey))
+              && !e.shiftKey && e.keyCode === 'G'.charCodeAt(0)) {
             this._toggleGravityMode();
             console.log('Gravity mode ' + (this._isGravityEnabled ? 'enabled' : 'disabled'));
           }
