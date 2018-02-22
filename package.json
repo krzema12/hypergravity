@@ -14,7 +14,8 @@
     "gravity"
   ],
   "scripts": {
-    "build": "npx webpack"
+    "build": "npx webpack",
+    "prepublish": "yarn build"
   },
   "dependencies": {
     "matter-js": "^0.14.0"

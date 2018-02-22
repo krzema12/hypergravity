@@ -25,4 +25,4 @@
     'hypergravity'
   ],
 ```
-5. After each change in source files, run `yarn build` to rebuild `index.js` which is in fact loaded by Hyper.
+5. At the beginning and after each change in source files, run `yarn build` to (re)build `index.js` which is in fact loaded by Hyper.
