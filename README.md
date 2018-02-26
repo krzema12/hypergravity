@@ -2,7 +2,7 @@
 
 ![Animated demo](https://user-images.githubusercontent.com/3110813/35337934-d11d8afc-011c-11e8-9131-6c0bf23ec669.gif)
 
-![npm](https://img.shields.io/npm/dw/hypergravity.svg)
+[![npm](https://img.shields.io/npm/dw/hypergravity.svg)](https://www.npmjs.com/package/hypergravity)
 
 ## How to install and use it
 
