@@ -4,6 +4,11 @@
 
 [![npm](https://img.shields.io/npm/dw/hypergravity.svg)](https://www.npmjs.com/package/hypergravity)
 
+## Warning - not compatible with Hyper 2.0+
+
+It's because Hyper now uses a canvas to draw the whole terminal content, and there's no access to invidual DOM elements like text line, words, etc.
+Tracked in issue #20.
+
 ## How to install and use it
 
 1. Open `~/.hyper.js` and add `hypergravity` in the proper place:
