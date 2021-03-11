@@ -3,6 +3,55 @@ import GravityAnimationModel from './GravityAnimationModel';
 
 import DOMUtils from './DOMUtils';
 
+exports.decorateKeymaps = (keymaps) => {
+  return Object.assign({}, keymaps, {
+    'gravity:toggle': 'ctrl+g'
+  });
+}
+
+exports.decorateTerms = (Terms, {React}) => {
+  return class extends React.Component {
+    constructor (props, context) {
+      super(props, context);
+
+      this._onDecorated = this._onDecorated.bind(this);
+      this._terms = null;
+    }
+
+    render () {
+      return React.createElement(Terms, Object.assign({}, this.props, {
+        onDecorated: this._onDecorated
+      }));
+    }
+
+    _onDecorated (terms) {
+      if (this.props.onDecorated) { this.props.onDecorated(terms); };
+
+      if (terms) {
+        terms.registerCommands({
+          'gravity:toggle': (e) => {
+            this._toggleGravityMode();
+            e.preventDefault();
+          }
+        });
+      }
+
+      this._terms = terms;
+    }
+
+    _toggleGravityMode () {
+      if (!this._terms.getActiveTerm) {
+        return;
+      }
+      const term = this._terms.getActiveTerm();
+      console.log('term', term);
+      if (term && term.props && term.props.toggleGravityMode) {
+        term.props.toggleGravityMode();
+      }
+    }
+  };
+};
+
 exports.decorateTerm = (Term, { React, notify }) => {
   return class extends React.Component {
     constructor (props, context) {
@@ -10,6 +59,9 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
       this._onTerminal = this._onTerminal.bind(this);
       this._drawFrame = this._drawFrame.bind(this);
+      this._toggleGravityMode = this._toggleGravityMode.bind(this);
+      this._enableGravityMode = this._enableGravityMode.bind(this);
+      this._disableGravityMode = this._disableGravityMode.bind(this);
       this._selectDOMElementsToAnimate = this._selectDOMElementsToAnimate.bind(this);
       this._elements = [];
       this._elmentSelectionStrategy = new TextNodesElementSelectionStrategy();
@@ -17,7 +69,8 @@ exports.decorateTerm = (Term, { React, notify }) => {
 
     render () {
       return React.createElement(Term, Object.assign({}, this.props, {
-        onTerminal: this._onTerminal
+        onTerminal: this._onTerminal,
+        toggleGravityMode: this._toggleGravityMode
       }));
     }
 
@@ -70,26 +123,6 @@ exports.decorateTerm = (Term, { React, notify }) => {
       }
 
       this._rootDiv = term.div_;
-
-      this._addKeyboardShortcutHandler(term);
-    }
-
-    _addKeyboardShortcutHandler(term) {
-      const activatingKeyShortcutHandler = [
-        "keydown",
-        function(e) {
-          if ((  (window.process.platform === 'darwin' &&  e.metaKey && !e.ctrlKey)
-              || (window.process.platform !== 'darwin' && !e.metaKey &&  e.ctrlKey))
-              && !e.shiftKey && e.keyCode === 'G'.charCodeAt(0)) {
-            this._toggleGravityMode();
-            console.log('Gravity mode ' + (this._isGravityEnabled ? 'enabled' : 'disabled'));
-          }
-        }.bind(this)
-      ];
-
-      term.uninstallKeyboard();
-      term.keyboard.handlers_ = [...term.keyboard.handlers_, activatingKeyShortcutHandler];
-      term.installKeyboard();
     }
 
     _toggleGravityMode() {
